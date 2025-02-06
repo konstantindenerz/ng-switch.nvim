@@ -28,7 +28,6 @@ If you want to override the default shortcuts, you can define your own in the La
     })
   end,
   keys = {
-    { "<leader>cnq", ":NgSwitchToggle<cr>", desc = "Toggle" },
     { "<leader>cnt", ":NgSwitchTS<cr>", desc = "To Component" },
     { "<leader>cnc", ":NgSwitchStyle<cr>", desc = "To Style" },
     { "<leader>cnh", ":NgSwitchHTML<cr>", desc = "To Template" },
