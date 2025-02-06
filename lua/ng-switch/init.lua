@@ -1,49 +1,70 @@
 local M = {}
 
 local transforms = {
-  ts_to_html = { "%.ts$", ".html" },
-  html_to_ts = { "%.html$", ".ts" },
-  spec_to_ts = { "%.spec%.ts$", ".ts" },
-  ts_to_spec = { "%.ts$", ".spec.ts" },
-  ts_to_style = { "%.ts$", ".scss" },
-  style_to_ts = { "%.scss$", ".ts" },
-  stories_to_ts = { "%.component%.stories%.ts$", ".component.ts" },
-  ts_to_stories = { "%.component%.ts$", ".component.stories.ts" },
+  {
+    "%.component%.ts$",
+    {
+      html = ".component.html",
+      style = ".component.scss",
+      spec = ".component.spec.ts",
+      stories = ".component.stories.ts",
+    },
+  },
+  {
+    "%.component%.html$",
+    { ts = ".component.ts", style = ".component.scss", spec = ".component.spec.ts", stories = ".component.stories.ts" },
+  },
+  {
+    "%.component%.scss$",
+    { ts = ".component.ts", html = ".component.html", spec = ".component.spec.ts", stories = ".component.stories.ts" },
+  },
+  {
+    "%.component%.spec%.ts$",
+    { ts = ".component.ts", html = ".component.html", style = ".component.scss", stories = ".component.stories.ts" },
+  },
+  {
+    "%.component%.stories%.ts$",
+    { ts = ".component.ts", html = ".component.html", style = ".component.scss", spec = ".component.spec.ts" },
+  },
 }
 
-local function switch(transform, cmd)
-  local path, new_path = vim.fn.expand("%"), vim.fn.expand("%"):gsub(transform[1], transform[2])
-  if new_path ~= path then
-    vim.cmd.edit(new_path)
-  else
-    error("NgSwitch: No match for '" .. cmd .. "'", 1)
+local function switch(target)
+  local path = vim.fn.expand("%")
+
+  for _, entry in ipairs(transforms) do
+    local pattern, replacements = entry[1], entry[2]
+    if path:match(pattern) and replacements[target] then
+      local new_path = path:gsub(pattern, replacements[target])
+      if new_path ~= path then
+        vim.cmd.edit(new_path)
+        return
+      end
+    end
   end
+
+  error("NgSwitch: No matching file found", 1)
 end
 
-M.toggle = function()
-  switch(transforms.ts_to_html, "NgSwitchToggle")
-end
 M.to_ts = function()
-  switch(transforms.spec_to_ts, "NgSwitchTS")
+  switch("ts")
 end
 M.to_html = function()
-  switch(transforms.ts_to_html, "NgSwitchHTML")
+  switch("html")
 end
 M.to_style = function()
-  switch(transforms.ts_to_style, "NgSwitchStyle")
+  switch("style")
 end
 M.to_spec = function()
-  switch(transforms.ts_to_spec, "NgSwitchSpec")
+  switch("spec")
 end
 M.to_stories = function()
-  switch(transforms.ts_to_stories, "NgSwitchStories")
+  switch("stories")
 end
 
 function M.setup(opts)
   opts = opts or {}
 
   for cmd, func in pairs({
-    Toggle = M.toggle,
     TS = M.to_ts,
     HTML = M.to_html,
     Style = M.to_style,
@@ -54,7 +75,7 @@ function M.setup(opts)
   end
 
   if opts.keymaps then
-    for key, cmd in pairs({ q = "Toggle", t = "TS", c = "Style", h = "HTML", sp = "Spec", st = "Stories" }) do
+    for key, cmd in pairs({ t = "TS", h = "HTML", c = "Style", sp = "Spec", st = "Stories" }) do
       vim.keymap.set("n", "<leader>cn" .. key, ":NgSwitch" .. cmd .. "<cr>", { desc = "To " .. cmd })
     end
   end
