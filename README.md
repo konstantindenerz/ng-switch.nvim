@@ -9,7 +9,6 @@ A simple Neovim plugin for Angular file switching (`.ts`, `.html`, `.spec.ts`, `
 ```lua
 {
   "konstantindenerz/ng-switch",
-  dir = "~/.config/nvim/lua/plugins/ng-switch",
   config = function()
     require("ng-switch").setup({ keymaps = true })
   end,
