@@ -28,6 +28,7 @@ end
 local function switch(target)
   local path = vim.fn.expand("%")
   local new_path
+
   if path:find("%.component%.") then
     local base = get_component_base(path)
     if base and transforms.component[target] then
@@ -39,9 +40,9 @@ local function switch(target)
       new_path = base .. transforms.ng[target]
     end
   end
+
   if new_path and new_path ~= path then
     vim.cmd.edit(new_path)
-    return
   end
 end
 
