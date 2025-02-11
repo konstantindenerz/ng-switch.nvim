@@ -1,6 +1,7 @@
 # NgSwitch.nvim
 
 A simple Neovim plugin for Angular file switching (`.ts`, `.html`, `.spec.ts`, `.scss`, `.stories.ts`).
+Supports both traditional `.component.*` and the newer `.ng.*` file naming conventions.
 
 ## Installation
 
